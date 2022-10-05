@@ -9,15 +9,13 @@ import (
 
 func nextfile(lastfile string) string {
 	splited := strings.Split(lastfile, "/")
-	for i := 1; i < 6; i++ {
-		if x, _ := strconv.Atoi(splited[3]); x == 5 {
-			splited[3] = "1.txt"
-			y, _ := strconv.Atoi(splited[2])
-			splited[2] = strconv.Itoa(y + 1)
-		} else {
-			y, _ := strconv.Atoi(splited[3])
-			splited[3] = strconv.Itoa(y+1) + ".txt"
-		}
+	if x, _ := strconv.Atoi(string(splited[3][0])); x == 5 {
+		splited[3] = "1.txt"
+		y, _ := strconv.Atoi(splited[2])
+		splited[2] = strconv.Itoa(y + 1)
+	} else {
+		y, _ := strconv.Atoi(string(splited[3][0]))
+		splited[3] = strconv.Itoa(y+1) + ".txt"
 	}
 	return splited[0] + "/" + splited[1] + "/" + splited[2] + "/" + splited[3]
 }
@@ -51,7 +49,14 @@ func main() {
 		var b int
 		fmt.Scanf("%d", &b)
 		a = append(a, b)
-		b, file = gessit(a, file)
+		if len(a) < 3 {
+			b, file = gessit(a, file)
+		} else {
+			text, _ := os.ReadFile(file)
+			data := string(text)
+			table := strings.Split(data, "\n")
+			b, _ = strconv.Atoi(table[len(a)])
+		}
 		fmt.Println(b, b)
 	}
 }
