@@ -16,7 +16,7 @@ func nextfile(lastfile string) string {
 			splited[2] = strconv.Itoa(y + 1)
 		} else {
 			y, _ := strconv.Atoi(splited[3])
-			splited[2] = strconv.Itoa(y+1) + ".txt"
+			splited[3] = strconv.Itoa(y+1) + ".txt"
 		}
 	}
 	return splited[0] + "/" + splited[1] + "/" + splited[2] + "/" + splited[3]
@@ -27,7 +27,7 @@ func gessit(a []int, file string) (nb int, filefind string) {
 	data := string(text)
 	table := strings.Split(data, "\n")
 	if err != nil {
-		gessit(a, nextfile(file))
+		return a[len(a)-1], nextfile(file)
 	} else {
 		for i := 0; i < len(a); i++ {
 			if x, _ := strconv.Atoi(table[i]); x == a[i] {
