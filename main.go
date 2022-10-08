@@ -9,15 +9,18 @@ import (
 
 func nextfile(lastfile string) string {
 	splited := strings.Split(lastfile, "/")
-	if x, _ := strconv.Atoi(string(splited[3][0])); x == 5 {
-		splited[3] = "1.txt"
-		y, _ := strconv.Atoi(splited[2])
-		splited[2] = strconv.Itoa(y + 1)
-	} else {
-		y, _ := strconv.Atoi(string(splited[3][0]))
-		splited[3] = strconv.Itoa(y+1) + ".txt"
+	if len(splited) > 3 {
+		if x, _ := strconv.Atoi(string(splited[3][0])); x == 5 {
+			splited[3] = "1.txt"
+			y, _ := strconv.Atoi(splited[2])
+			splited[2] = strconv.Itoa(y + 1)
+		} else {
+			y, _ := strconv.Atoi(string(splited[3][0]))
+			splited[3] = strconv.Itoa(y+1) + ".txt"
+		}
+		return splited[0] + "/" + splited[1] + "/" + splited[2] + "/" + splited[3]
 	}
-	return splited[0] + "/" + splited[1] + "/" + splited[2] + "/" + splited[3]
+	return lastfile
 }
 
 func gessit(a []int, file string) (nb int, filefind string) {
@@ -25,21 +28,23 @@ func gessit(a []int, file string) (nb int, filefind string) {
 	data := string(text)
 	table := strings.Split(data, "\n")
 	if err != nil {
-		return a[len(a)-1], nextfile(file)
+		return a[len(a)-1], file
 	} else {
 		for i := 0; i < len(a); i++ {
-			if x, _ := strconv.Atoi(table[i]); x == a[i] {
-				nb, _ = strconv.Atoi(table[i+1])
-				filefind = file
-				if i == len(a)-1 {
-					return
+			if len(table) > i {
+				if x, _ := strconv.Atoi(table[i]); x == a[i] {
+					nb, _ = strconv.Atoi(table[i+1])
+					filefind = file
+					if i == len(a)-1 {
+						return
+					}
+				} else {
+					break
 				}
-			} else {
-				break
 			}
 		}
 	}
-	return gessit(a, nextfile(file))
+	return gessit(a, file)
 }
 
 func main() {
@@ -55,7 +60,11 @@ func main() {
 			text, _ := os.ReadFile(file)
 			data := string(text)
 			table := strings.Split(data, "\n")
-			b, _ = strconv.Atoi(table[len(a)])
+			if len(table) > len(a) {
+				b, _ = strconv.Atoi(table[len(a)])
+			} else {
+				b, _ = gessit(a, file)
+			}
 		}
 		fmt.Println(b, b)
 	}
