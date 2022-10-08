@@ -35,7 +35,11 @@ func gessit(stat []int) (nb int, marge int) {
 	Variance = Variance / float64(len(stat))
 	stdev := math.Sqrt(Variance)
 	nb = stat[len(stat)-1] + int(Median) - int(moyen)
-	marge = int(stdev)
+	if stdev < 25 {
+		marge = int(stdev)
+	} else {
+		marge = 25
+	}
 	return nb, marge
 }
 
