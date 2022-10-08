@@ -2,70 +2,52 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
+	"math"
+	"sort"
 )
 
-func nextfile(lastfile string) string {
-	splited := strings.Split(lastfile, "/")
-	if len(splited) > 3 {
-		if x, _ := strconv.Atoi(string(splited[3][0])); x == 5 {
-			splited[3] = "1.txt"
-			y, _ := strconv.Atoi(splited[2])
-			splited[2] = strconv.Itoa(y + 1)
+func gessit(stat []int) (nb int, marge int) {
+	moyen := 0.0
+	Median := 0.0
+	Variance := 0.0
+	for _, v := range stat {
+		moyen = moyen + float64(v)
+	}
+	sort.Ints(stat)
+	if len(stat)%2 == 0 {
+		if len(stat) > 2 {
+			Median = float64((stat[0] + stat[1]) / 2)
 		} else {
-			y, _ := strconv.Atoi(string(splited[3][0]))
-			splited[3] = strconv.Itoa(y+1) + ".txt"
-		}
-		return splited[0] + "/" + splited[1] + "/" + splited[2] + "/" + splited[3]
-	}
-	return lastfile
-}
-
-func gessit(a []int, file string) (nb int, filefind string) {
-	text, err := os.ReadFile(file)
-	data := string(text)
-	table := strings.Split(data, "\n")
-	if err != nil {
-		return a[len(a)-1], file
-	} else {
-		for i := 0; i < len(a); i++ {
-			if len(table) > i {
-				if x, _ := strconv.Atoi(table[i]); x == a[i] {
-					nb, _ = strconv.Atoi(table[i+1])
-					filefind = file
-					if i == len(a)-1 {
-						return
-					}
-				} else {
-					break
-				}
-			}
+			Median = float64(stat[0])
 		}
 	}
-	return gessit(a, file)
+	if len(stat)%2 == 1 {
+		if len(stat) > 1 {
+			Median = float64(stat[(len(stat)/2)+1])
+		} else {
+			Median = float64(stat[0])
+		}
+	}
+	moyen = moyen / float64(len(stat))
+	for _, v := range stat {
+		Variance = Variance + ((float64(v) - moyen) * (float64(v) - moyen))
+	}
+	Variance = Variance / float64(len(stat))
+	stdev := math.Sqrt(Variance)
+	nb = stat[len(stat)-1] + int(Median) - int(moyen)
+	marge = int(stdev)
+	return nb, marge
 }
 
 func main() {
 	var a []int
-	file := "./data_sets/1/1.txt"
 	for i := 0; i < 12500; i++ {
 		var b int
+		var nb int
+		var marge int
 		fmt.Scanf("%d", &b)
 		a = append(a, b)
-		if len(a) < 3 {
-			b, file = gessit(a, file)
-		} else {
-			text, _ := os.ReadFile(file)
-			data := string(text)
-			table := strings.Split(data, "\n")
-			if len(table) > len(a) {
-				b, _ = strconv.Atoi(table[len(a)])
-			} else {
-				b, _ = gessit(a, file)
-			}
-		}
-		fmt.Println(b, b)
+		nb, marge = gessit(a)
+		fmt.Println(nb-marge, nb+marge)
 	}
 }
